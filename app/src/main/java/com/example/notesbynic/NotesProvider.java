@@ -58,17 +58,17 @@ public class NotesProvider extends ContentProvider{
     public Uri insert(Uri uri, ContentValues values) {
         //get primary key value
         // 3rd argument the pass on ContentValues object that's passed into this method
-        long id = database.insert(DBOpenHelper.TABLE_NOTES, null, )
-        return null;
+        long id = database.insert(DBOpenHelper.TABLE_NOTES, null, values);
+        return Uri.parse(BASE_PATH + "/" + id);
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        return database.delete(DBOpenHelper.TABLE_NOTES, selection, selectionArgs);
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        return database.update(DBOpenHelper.TABLE_NOTES, values, selection, selectionArgs);
     }
 }
