@@ -20,10 +20,11 @@
         </activity>
 
         <provider
-            android:authorities="com.example.plainolnotes.notesprovider"
             android:name=".NotesProvider"
-            android:exported="false" /> <!--Indicates whether this content provider is available to the rest of the operating system -->
+            android:authorities="com.example.plainolnotes.notesprovider"
+            android:exported="false" /> <!-- Indicates whether this content provider is available to the rest of the operating system -->
 
+        <activity android:name=".EditorActivity"></activity>
     </application>
 
 </manifest>
