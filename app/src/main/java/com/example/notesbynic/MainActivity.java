@@ -29,11 +29,9 @@ implements LoaderManager.LoaderCallbacks<Cursor>
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        insertNote("New note");
-
         String[] from = {DBOpenHelper.NOTE_TEXT};
-        int[] to = {android.R.id.text1};
-        cursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, 0);
+        int[] to = {R.id.tvNote};
+        cursorAdapter = new SimpleCursorAdapter(this, R.layout.note_list_item, null, from, to, 0);
 
         ListView list = (ListView) findViewById(android.R.id.list);
         list.setAdapter(cursorAdapter);
@@ -94,7 +92,14 @@ implements LoaderManager.LoaderCallbacks<Cursor>
                     @Override
                     public void onClick(DialogInterface dialog, int button) {
                         if (button == DialogInterface.BUTTON_POSITIVE) {
-                            //Insert Data management code 
+                            //Insert Data management code
+                            getContentResolver().delete(
+                                    NotesProvider.CONTENT_URI, null, null
+                            );
+                            //Show it's been deleted, refresh screen
+                            restartLoader();
+
+                            //Toast msg to show user what happened
                             Toast.makeText(MainActivity.this,
                                     getString(R.string.all_deleted),
                                     Toast.LENGTH_SHORT).show();
