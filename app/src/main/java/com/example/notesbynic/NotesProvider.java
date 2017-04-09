@@ -21,6 +21,7 @@ public class NotesProvider extends ContentProvider{
 
     private static final UriMatcher uriMatcher =
             new UriMatcher(UriMatcher.NO_MATCH);
+    public static final String CONTENT_ITEM_TYPE = "Note";
             //Parse a Uri and tell you which operation has been requested
 
     //Will execute the first time anything is called from this class
