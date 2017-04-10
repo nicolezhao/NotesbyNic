@@ -2,6 +2,7 @@ package com.example.notesbynic;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,12 +13,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class EditorActivity extends AppCompatActivity {
     //Remember what I'm doing (insert, delete, etc)
     private String action;
     //Represent the edit text object, the editor control the user is typing inti
     private EditText editor;
+    //Where clause for sql statement
+    private String noteFilter;
+    //Existing text of selected note
+    private String oldText;
 
 
     @Override
@@ -41,6 +47,17 @@ public class EditorActivity extends AppCompatActivity {
             //Insert new not
             action = Intent.ACTION_INSERT;
             setTitle(getString(R.string.new_note));
+        } else {
+            //If uri has been passed in, means user wants to edit note
+            action = Intent.ACTION_EDIT;
+            noteFilter = DBOpenHelper.NOTE_ID + "=" + uri.getLastPathSegment();
+
+            Cursor cursor = getContentResolver().query(uri, DBOpenHelper.ALL_COLUMNS, noteFilter, null, null);
+            //Retrieve data: move to first and only row
+            cursor.moveToFirst();
+            oldText = cursor.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TEXT));
+            editor.setText(oldText);
+            editor.requestFocus(); //Move cursor to end of existing text
         }
     }
 
@@ -74,8 +91,30 @@ public class EditorActivity extends AppCompatActivity {
                 } else {
                     insertNote(newText);
                 }
+                break;
+            case Intent.ACTION_EDIT:
+                if (newText.length() == 0){
+                    //deleteNote();
+                } else if (oldText.equals(newText)){
+                    setResult(RESULT_CANCELED);
+                } else {
+                    //Update note in database
+                    updateNote(newText);
+                }
+
         }
         finish();
+    }
+
+    private void updateNote(String noteText) {
+        //Create values object
+        ContentValues values = new ContentValues();
+        //Put text into values object
+        values.put(DBOpenHelper.NOTE_TEXT, noteText);
+        getContentResolver().update(NotesProvider.CONTENT_URI, values, noteFilter, null);
+        //(noteFilter makes sure we're only updating selected row)
+        Toast.makeText(this, R.string.note_updated, Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
     }
 
     private void insertNote(String noteText) {

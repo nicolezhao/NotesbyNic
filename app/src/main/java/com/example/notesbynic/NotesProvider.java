@@ -45,6 +45,11 @@ public class NotesProvider extends ContentProvider{
     //Will get data from the database table: notes
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        //user selection (of note) results in pasing uri with primary key of note to know which to open
+        if(uriMatcher.match(uri) == NOTES_ID){
+            selection = DBOpenHelper.NOTE_ID + "=" + uri.getLastPathSegment();
+        }
+
         return database.query(DBOpenHelper.TABLE_NOTES, DBOpenHelper.ALL_COLUMNS, selection, null,
                 null, null, DBOpenHelper.NOTE_CREATED + " DESC");
     }
