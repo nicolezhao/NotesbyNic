@@ -1,12 +1,14 @@
 package com.example.notesbynic;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -96,10 +98,28 @@ public class EditorActivity extends AppCompatActivity {
     }
 
     private void deleteNote() {
-        getContentResolver().delete(NotesProvider.CONTENT_URI, noteFilter, null);
-        Toast.makeText(this, R.string.note_deleted, Toast.LENGTH_SHORT).show();
-        setResult(RESULT_OK);
-        finish();
+        //Add user confirmation
+        DialogInterface.OnClickListener dialogClickListener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int button) {
+                        if (button == DialogInterface.BUTTON_POSITIVE) {
+                            //Insert Data management code
+                            getContentResolver().delete(NotesProvider.CONTENT_URI, noteFilter, null);
+
+                            //Toast msg to show user what happened
+                            Toast.makeText(EditorActivity.this, R.string.note_deleted, Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finish();
+                        }
+                    }
+                };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.are_you_sure))
+                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
+                .show();
     }
 
     private void finishEditing(){
